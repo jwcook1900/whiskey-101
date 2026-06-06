@@ -11,8 +11,13 @@
  * The site calls this to add / list / delete / clear seizure entries.
  * Timestamps are stored as epoch milliseconds (column A) plus a readable
  * Sydney-time string (column B) so the sheet is easy to read by hand.
+ *
+ * Anyone can ADD a log. Only requests carrying the correct ADMIN_KEY may
+ * DELETE or CLEAR entries. CHANGE the value below to your own secret, then
+ * redeploy (Deploy > Manage deployments > Edit > Version: New version).
  */
 var SHEET_NAME = 'SeizureLog';
+var ADMIN_KEY = 'CHANGE-ME-TO-A-SECRET';  // <-- set your own owner key
 
 function doGet(e)  { return handle_(e); }
 function doPost(e) { return handle_(e); }
@@ -24,22 +29,26 @@ function handle_(e) {
     var sheet = getSheet_();
     var p = (e && e.parameter) || {};
     var action = p.action || 'list';
+    var isAdmin = !!(p.adminKey && p.adminKey === ADMIN_KEY);
 
     if (action === 'add' && p.iso) {
+      // Anyone may add a log.
       var ms = Number(new Date(p.iso).getTime());
       if (!isNaN(ms) && findRow_(sheet, ms) === -1) {
         var syd = Utilities.formatDate(new Date(ms), 'Australia/Sydney', 'EEE d MMM yyyy, h:mm a z');
         sheet.appendRow([ms, syd, (p.ua || '').toString().slice(0, 80)]);
       }
     } else if (action === 'delete' && p.iso) {
+      if (!isAdmin) return reply_(e, { ok: false, error: 'unauthorized', admin: false });
       var delMs = Number(new Date(p.iso).getTime());
       var row = findRow_(sheet, delMs);
       if (row > -1) sheet.deleteRow(row);
     } else if (action === 'clear') {
+      if (!isAdmin) return reply_(e, { ok: false, error: 'unauthorized', admin: false });
       if (sheet.getLastRow() > 1) sheet.deleteRows(2, sheet.getLastRow() - 1);
     }
 
-    return reply_(e, { ok: true, entries: list_(sheet) });
+    return reply_(e, { ok: true, entries: list_(sheet), admin: isAdmin });
   } catch (err) {
     return reply_(e, { ok: false, error: String(err) });
   } finally {

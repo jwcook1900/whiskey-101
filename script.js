@@ -91,6 +91,17 @@ document.documentElement.classList.remove('no-js');
   var ENDPOINT = (cfg.seizureEndpoint || '').trim();
   var shared = false; // becomes true once the sheet has answered
 
+  // ---- editor (owner) mode ----
+  // Only the owner can remove/clear entries on the shared sheet. The owner's
+  // key lives server-side and in the owner's head — never in this public
+  // file. Once entered correctly it's remembered on this device.
+  var ADMIN_STORE = 'whiskeyAdminKey';
+  var adminMode = false;
+  function getAdminKey() { try { return localStorage.getItem(ADMIN_STORE) || ''; } catch (e) { return ''; } }
+  function setAdminKey(k) { try { if (k) localStorage.setItem(ADMIN_STORE, k); else localStorage.removeItem(ADMIN_STORE); } catch (e) {} }
+  // Without a shared sheet, this device owns its own local log, so editing is allowed.
+  function canEdit() { return !ENDPOINT || adminMode; }
+
   // Always display in Sydney wall-clock time, regardless of the device's
   // own timezone, so AEST/AEDT is shown correctly.
   function fmtSydney(date) {
@@ -203,14 +214,16 @@ document.documentElement.classList.remove('no-js');
       var when = document.createElement('span');
       when.className = 'seizure-log__when';
       when.textContent = fmtSydney(new Date(entry.ts));
-      var rm = document.createElement('button');
-      rm.type = 'button';
-      rm.className = 'seizure-log__remove';
-      rm.setAttribute('aria-label', 'Remove this entry');
-      rm.textContent = '×';
-      rm.addEventListener('click', function () { removeEntry(entry.ts, when.textContent); });
       li.appendChild(when);
-      li.appendChild(rm);
+      if (canEdit()) {
+        var rm = document.createElement('button');
+        rm.type = 'button';
+        rm.className = 'seizure-log__remove';
+        rm.setAttribute('aria-label', 'Remove this entry');
+        rm.textContent = '×';
+        rm.addEventListener('click', function () { removeEntry(entry.ts, when.textContent); });
+        li.appendChild(rm);
+      }
       listEl.appendChild(li);
     });
   }
@@ -231,24 +244,37 @@ document.documentElement.classList.remove('no-js');
 
   function removeEntry(ts, label) {
     if (!confirm('Remove this logged seizure?\n\n' + label)) return;
-    persist(load().filter(function (e) { return e.ts !== ts; }));
-    render();
-    showToast('Entry removed');
     if (ENDPOINT) {
-      callSheet({ action: 'delete', iso: ts }, function (data) {
-        var remote = remoteToEntries(data);
-        if (remote) { shared = true; persist(remote); render(); }
+      // Let the sheet be the source of truth so an unauthorised delete can't
+      // even appear to succeed locally.
+      callSheet({ action: 'delete', iso: ts, adminKey: getAdminKey() }, function (data) {
+        if (data && data.ok) {
+          shared = true; persist(remoteToEntries(data) || []); render();
+          showToast('Entry removed');
+        } else if (data && data.error === 'unauthorized') {
+          adminMode = false; setAdminKey(''); updateAdminUI(); render();
+          showToast('Only the owner can remove entries');
+        } else {
+          showToast('Could not reach the log — try again');
+        }
       });
+    } else {
+      persist(load().filter(function (e) { return e.ts !== ts; }));
+      render();
+      showToast('Entry removed');
     }
   }
 
   // Pull the shared list and push up anything logged offline.
   function sync() {
     if (!ENDPOINT) return;
-    callSheet({ action: 'list' }, function (data) {
+    callSheet({ action: 'list', adminKey: getAdminKey() }, function (data) {
       var remote = remoteToEntries(data);
       if (!remote) { setNote(); return; } // offline — keep local view
       shared = true;
+      adminMode = !!(data && data.admin);
+      if (getAdminKey() && !adminMode) setAdminKey(''); // stored key no longer valid
+      updateAdminUI();
       var local = load();
       var remoteMap = byTs(remote);
       // push local-only entries (logged while offline) up to the sheet
@@ -317,13 +343,52 @@ document.documentElement.classList.remove('no-js');
     clearBtn.addEventListener('click', function () {
       if (!load().length) return;
       if (!confirm('Clear the entire seizure log? This cannot be undone.')) return;
-      persist([]);
-      render();
-      showToast('Log cleared');
-      if (ENDPOINT) callSheet({ action: 'clear' }, function () {});
+      if (ENDPOINT) {
+        callSheet({ action: 'clear', adminKey: getAdminKey() }, function (data) {
+          if (data && data.ok) { persist(remoteToEntries(data) || []); render(); showToast('Log cleared'); }
+          else if (data && data.error === 'unauthorized') {
+            adminMode = false; setAdminKey(''); updateAdminUI(); render();
+            showToast('Only the owner can clear the log');
+          } else { showToast('Could not reach the log — try again'); }
+        });
+      } else {
+        persist([]); render(); showToast('Log cleared');
+      }
     });
   }
 
+  // Editor (owner) mode unlock/lock. Only relevant when a shared sheet is used.
+  var adminToggle = document.getElementById('admin-toggle');
+  function updateAdminUI() {
+    if (adminToggle) {
+      adminToggle.hidden = !ENDPOINT;
+      adminToggle.textContent = adminMode ? '🔒 Exit editor mode' : '🔓 Editor mode';
+    }
+    if (clearBtn) clearBtn.hidden = !canEdit();
+  }
+  if (adminToggle) {
+    adminToggle.addEventListener('click', function () {
+      if (adminMode) {
+        adminMode = false; setAdminKey(''); updateAdminUI(); render();
+        showToast('Editor mode off');
+        return;
+      }
+      var k = prompt("Enter the owner edit key to remove or clear entries:");
+      if (!k) return;
+      callSheet({ action: 'list', adminKey: k }, function (data) {
+        if (data && data.ok && data.admin) {
+          setAdminKey(k); adminMode = true; updateAdminUI(); render();
+          showToast('Editor mode on ✓');
+        } else if (data && data.ok) {
+          showToast('Incorrect key');
+        } else {
+          showToast('Could not reach the log — try again');
+        }
+      });
+    });
+  }
+
+  updateAdminUI();
   render();
   sync();
 })();
