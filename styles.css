@@ -74,6 +74,7 @@ a { color: #2f6f3e; }
   align-items: flex-start;
 }
 .hero__photo {
+  position: relative;
   flex: 0 0 200px;
   width: 200px;
   height: 200px;
@@ -83,8 +84,17 @@ a { color: #2f6f3e; }
   display: grid;
   place-items: center;
   box-shadow: var(--shadow);
+  overflow: hidden;
 }
 .hero__photo-emoji { font-size: 90px; line-height: 1; }
+.hero__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 55% 32%;
+}
 .hero__text { flex: 1; min-width: 0; }
 .hero__text p { margin: 0 0 12px; }
 .hero__highlight {
