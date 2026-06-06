@@ -50,11 +50,6 @@ document.documentElement.classList.remove('no-js');
   window.addEventListener('hashchange', openFromHash);
   openFromHash();
 
-  // Open the first section by default so the page isn't fully collapsed on load.
-  if (!location.hash && accordions.length) {
-    open(accordions[0]);
-  }
-
   // Swap video placeholders for real players once a video file actually loads.
   document.querySelectorAll('.video-frame').forEach(function (frame) {
     var video = frame.querySelector('video');
