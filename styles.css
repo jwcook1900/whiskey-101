@@ -1,0 +1,262 @@
+:root {
+  --green: #d9ef9a;
+  --green-deep: #c4e06e;
+  --blue: #a9c8f0;
+  --blue-soft: #bcd6f5;
+  --ink: #2b3a1c;
+  --ink-soft: #44502f;
+  --card-bg: #ffffff;
+  --alert: #ffe2e0;
+  --alert-border: #ff8a80;
+  --shadow: 0 10px 30px rgba(60, 80, 30, 0.12);
+  --radius: 28px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  font-family: "Nunito", system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: #f4f7ec;
+  line-height: 1.55;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 { font-family: "Baloo 2", "Nunito", sans-serif; line-height: 1.1; }
+
+a { color: #2f6f3e; }
+
+/* Decorative blobs */
+.blob {
+  position: fixed;
+  z-index: 0;
+  filter: blur(2px);
+  opacity: 0.55;
+  pointer-events: none;
+}
+.blob--blue {
+  top: -60px; left: -40px; width: 260px; height: 220px;
+  background: var(--blue);
+  border-radius: 60% 40% 55% 45% / 55% 50% 50% 45%;
+}
+.blob--green {
+  bottom: 8%; left: -70px; width: 220px; height: 260px;
+  background: var(--green-deep);
+  border-radius: 50% 50% 40% 60% / 60% 45% 55% 40%;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  z-index: 1;
+  background: var(--green);
+  padding: 48px 20px 90px;
+  border-radius: 0 0 60px 60px;
+}
+.hero__inner { max-width: 980px; margin: 0 auto; }
+.hero__title {
+  text-align: center;
+  font-size: clamp(2.4rem, 7vw, 4.2rem);
+  font-weight: 800;
+  margin: 0 0 32px;
+  color: var(--ink);
+}
+.hero__card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 32px;
+  display: flex;
+  gap: 28px;
+  align-items: flex-start;
+}
+.hero__photo {
+  flex: 0 0 200px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, var(--blue-soft), var(--green-deep));
+  border: 8px solid var(--blue);
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow);
+}
+.hero__photo-emoji { font-size: 90px; line-height: 1; }
+.hero__text { flex: 1; min-width: 0; }
+.hero__text p { margin: 0 0 12px; }
+.hero__highlight {
+  background: var(--green);
+  border-radius: 18px;
+  padding: 16px 20px;
+  margin: 18px 0;
+}
+.hero__highlight-label { margin: 0 0 4px !important; font-weight: 700; }
+.hero__highlight-big {
+  font-family: "Baloo 2", sans-serif;
+  font-size: clamp(1.4rem, 4vw, 1.9rem);
+  font-weight: 800;
+  margin: 0 0 10px !important;
+  color: #2f6f3e;
+}
+
+/* WRAP / NAV */
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 20px 40px;
+}
+.quicknav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: -48px auto 36px;
+  position: sticky;
+  top: 12px;
+  z-index: 5;
+}
+.quicknav a {
+  background: #fff;
+  border: 2px solid var(--green-deep);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  box-shadow: 0 4px 12px rgba(60,80,30,0.1);
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+.quicknav a:hover { transform: translateY(-2px); background: var(--green); }
+
+/* GRID + CARDS */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 30px;
+  scroll-margin-top: 80px;
+}
+.card--wide { grid-column: 1 / -1; }
+.card--alert { background: var(--alert); border: 2px solid var(--alert-border); }
+.card__title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card ul { margin: 0; padding-left: 22px; }
+.card li { margin: 8px 0; }
+.card ul ul { margin-top: 6px; }
+.card ul ul li { color: var(--ink-soft); }
+
+/* MEDICINE */
+.med-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+.med-block {
+  background: #f7faea;
+  border-radius: 18px;
+  padding: 18px 20px;
+  border: 2px solid var(--green);
+}
+.med-block--highlight { background: #eef5ff; border-color: var(--blue); }
+.med-block__time {
+  font-size: 1.2rem;
+  margin: 0 0 12px;
+  color: #2f6f3e;
+}
+.pill-list { list-style: none; margin: 0; padding: 0; }
+.pill-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 7px 0;
+  font-weight: 600;
+}
+.dose {
+  flex: 0 0 auto;
+  background: var(--green-deep);
+  color: var(--ink);
+  font-weight: 800;
+  font-size: 0.85rem;
+  padding: 2px 9px;
+  border-radius: 999px;
+  min-width: 34px;
+  text-align: center;
+}
+.med-block--highlight .dose { background: var(--blue); }
+.med-note {
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px dashed var(--green-deep);
+}
+
+/* CONTACTS */
+.contacts {
+  position: relative;
+  z-index: 1;
+  background: var(--blue-soft);
+  border-radius: var(--radius);
+  padding: 32px;
+  margin: 28px 0;
+  box-shadow: var(--shadow);
+  scroll-margin-top: 80px;
+}
+.contacts__title { font-size: 1.7rem; margin: 0 0 20px; display: flex; gap: 10px; align-items: center; }
+.contacts__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.contact {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 18px;
+  text-decoration: none;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  box-shadow: 0 4px 12px rgba(40,60,90,0.1);
+  transition: transform 0.12s ease;
+}
+.contact:hover { transform: translateY(-2px); }
+.contact__name { font-weight: 700; font-family: "Baloo 2", sans-serif; }
+.contact__num { font-size: 1.15rem; font-weight: 800; color: #2f6f3e; letter-spacing: 0.5px; }
+.contacts__vet { background: #fff; border-radius: 16px; padding: 16px 20px; }
+.contacts__vet p { margin: 6px 0; }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 24px 20px 40px;
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* RESPONSIVE */
+@media (max-width: 760px) {
+  .hero { padding: 32px 16px 80px; }
+  .hero__card { flex-direction: column; align-items: center; text-align: center; padding: 24px; }
+  .hero__highlight { text-align: left; }
+  .grid { grid-template-columns: 1fr; }
+  .quicknav { position: static; margin: -40px auto 28px; }
+}
