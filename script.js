@@ -82,9 +82,14 @@ document.documentElement.classList.remove('no-js');
   var listEl = document.getElementById('seizure-list');
   var countEl = document.getElementById('seizure-count');
   var actionsEl = document.getElementById('seizure-actions');
+  var noteEl = document.querySelector('.seizure-log__note');
   var toastEl = document.getElementById('toast');
   var pendingDate = null;
   var toastTimer = null;
+
+  var cfg = window.WHISKEY_CONFIG || {};
+  var ENDPOINT = (cfg.seizureEndpoint || '').trim();
+  var shared = false; // becomes true once the sheet has answered
 
   // Always display in Sydney wall-clock time, regardless of the device's
   // own timezone, so AEST/AEDT is shown correctly.
@@ -100,6 +105,7 @@ document.documentElement.classList.remove('no-js');
     }
   }
 
+  // ---- storage (local cache / offline safety net) ----
   function load() {
     try { return JSON.parse(localStorage.getItem(KEY)) || []; }
     catch (e) { return []; }
@@ -107,19 +113,70 @@ document.documentElement.classList.remove('no-js');
   function persist(arr) {
     try { localStorage.setItem(KEY, JSON.stringify(arr)); } catch (e) {}
   }
+  function byTs(arr) {
+    var m = {};
+    arr.forEach(function (e) { if (e && e.ts) m[e.ts] = true; });
+    return m;
+  }
+  function mergeTs(a, b) {
+    var seen = {}, out = [];
+    a.concat(b).forEach(function (e) {
+      if (e && e.ts && !seen[e.ts]) { seen[e.ts] = true; out.push({ ts: e.ts }); }
+    });
+    return out;
+  }
+
+  // ---- JSONP bridge to the Apps Script web app (avoids CORS) ----
+  function callSheet(params, cb) {
+    if (!ENDPOINT) { if (cb) cb(null); return; }
+    var name = '__wcb' + Math.random().toString(36).slice(2);
+    var script = document.createElement('script');
+    var done = false;
+    var query = Object.keys(params).map(function (k) {
+      return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+    }).join('&');
+
+    function cleanup() {
+      clearTimeout(timer);
+      try { delete window[name]; } catch (e) { window[name] = undefined; }
+      if (script.parentNode) script.parentNode.removeChild(script);
+    }
+    window[name] = function (data) { done = true; cleanup(); if (cb) cb(data); };
+    var timer = setTimeout(function () { if (!done) { cleanup(); if (cb) cb(null); } }, 12000);
+    script.onerror = function () { if (!done) { cleanup(); if (cb) cb(null); } };
+    script.src = ENDPOINT + (ENDPOINT.indexOf('?') > -1 ? '&' : '?') + query + '&callback=' + name;
+    document.head.appendChild(script);
+  }
+
+  function remoteToEntries(data) {
+    if (!data || !data.ok || !data.entries) return null;
+    return data.entries
+      .map(function (e) { return e && e.iso ? { ts: e.iso } : null; })
+      .filter(function (e) { return e; });
+  }
 
   function showToast(msg) {
     if (!toastEl) return;
     toastEl.textContent = msg;
     toastEl.hidden = false;
-    // force reflow so the transition runs
-    void toastEl.offsetWidth;
+    void toastEl.offsetWidth; // force reflow so the transition runs
     toastEl.classList.add('is-visible');
     clearTimeout(toastTimer);
     toastTimer = setTimeout(function () {
       toastEl.classList.remove('is-visible');
       setTimeout(function () { toastEl.hidden = true; }, 300);
     }, 2600);
+  }
+
+  function setNote() {
+    if (!noteEl) return;
+    if (ENDPOINT && shared) {
+      noteEl.innerHTML = 'Synced to the shared log — everyone who opens this page sees the same list. Use <strong>Export / Share</strong> to send the history to the vet.';
+    } else if (ENDPOINT) {
+      noteEl.innerHTML = 'Shared logging is on, but the log couldn’t be reached right now — saved on this device and will sync when you’re back online.';
+    } else {
+      noteEl.innerHTML = 'Saved on this device, in Sydney time. Use <strong>Export / Share</strong> to send the history to the vet.';
+    }
   }
 
   function render() {
@@ -131,6 +188,7 @@ document.documentElement.classList.remove('no-js');
     if (!entries.length) {
       countEl.textContent = 'No seizures logged yet.';
       actionsEl.hidden = true;
+      setNote();
       return;
     }
 
@@ -138,6 +196,7 @@ document.documentElement.classList.remove('no-js');
       ? '1 seizure logged.'
       : entries.length + ' seizures logged.';
     actionsEl.hidden = false;
+    setNote();
 
     entries.forEach(function (entry) {
       var li = document.createElement('li');
@@ -149,12 +208,7 @@ document.documentElement.classList.remove('no-js');
       rm.className = 'seizure-log__remove';
       rm.setAttribute('aria-label', 'Remove this entry');
       rm.textContent = '×';
-      rm.addEventListener('click', function () {
-        if (!confirm('Remove this logged seizure?\n\n' + when.textContent)) return;
-        persist(load().filter(function (e) { return e.id !== entry.id; }));
-        render();
-        showToast('Entry removed');
-      });
+      rm.addEventListener('click', function () { removeEntry(entry.ts, when.textContent); });
       li.appendChild(when);
       li.appendChild(rm);
       listEl.appendChild(li);
@@ -162,11 +216,51 @@ document.documentElement.classList.remove('no-js');
   }
 
   function saveEntry(date) {
-    var entries = load();
-    entries.push({ id: String(date.getTime()) + '-' + Math.random().toString(36).slice(2, 7), ts: date.toISOString() });
-    persist(entries);
-    render();
+    var ts = date.toISOString();
+    var local = load();
+    if (!byTs(local)[ts]) { local.push({ ts: ts }); persist(local); }
+    render();                       // optimistic — show immediately
     showToast('Seizure logged ✓');
+    if (ENDPOINT) {
+      callSheet({ action: 'add', iso: ts, ua: (navigator.userAgent || '').slice(0, 60) }, function (data) {
+        var remote = remoteToEntries(data);
+        if (remote) { shared = true; persist(remote); render(); }
+      });
+    }
+  }
+
+  function removeEntry(ts, label) {
+    if (!confirm('Remove this logged seizure?\n\n' + label)) return;
+    persist(load().filter(function (e) { return e.ts !== ts; }));
+    render();
+    showToast('Entry removed');
+    if (ENDPOINT) {
+      callSheet({ action: 'delete', iso: ts }, function (data) {
+        var remote = remoteToEntries(data);
+        if (remote) { shared = true; persist(remote); render(); }
+      });
+    }
+  }
+
+  // Pull the shared list and push up anything logged offline.
+  function sync() {
+    if (!ENDPOINT) return;
+    callSheet({ action: 'list' }, function (data) {
+      var remote = remoteToEntries(data);
+      if (!remote) { setNote(); return; } // offline — keep local view
+      shared = true;
+      var local = load();
+      var remoteMap = byTs(remote);
+      // push local-only entries (logged while offline) up to the sheet
+      local.forEach(function (e) {
+        if (e.ts && !remoteMap[e.ts]) {
+          callSheet({ action: 'add', iso: e.ts, ua: (navigator.userAgent || '').slice(0, 60) }, function () {});
+        }
+      });
+      var merged = mergeTs(remote, local);
+      persist(merged);
+      render();
+    });
   }
 
   // Open confirmation, capturing the exact moment the button was hit.
@@ -176,7 +270,6 @@ document.documentElement.classList.remove('no-js');
       dialogTime.textContent = fmtSydney(pendingDate);
       dialog.showModal();
     } else {
-      // Fallback for browsers without <dialog> support.
       if (confirm('Log a seizure at:\n\n' + fmtSydney(pendingDate) + '\n\nSave to the log?')) {
         saveEntry(pendingDate);
       }
@@ -185,9 +278,7 @@ document.documentElement.classList.remove('no-js');
 
   if (dialog) {
     dialog.addEventListener('close', function () {
-      if (dialog.returnValue === 'confirm' && pendingDate) {
-        saveEntry(pendingDate);
-      }
+      if (dialog.returnValue === 'confirm' && pendingDate) saveEntry(pendingDate);
       pendingDate = null;
     });
   }
@@ -198,9 +289,7 @@ document.documentElement.classList.remove('no-js');
     exportBtn.addEventListener('click', function () {
       var entries = load().sort(function (a, b) { return new Date(a.ts) - new Date(b.ts); });
       if (!entries.length) { showToast('Nothing to export yet'); return; }
-      var lines = entries.map(function (e, i) {
-        return (i + 1) + '. ' + fmtSydney(new Date(e.ts));
-      });
+      var lines = entries.map(function (e, i) { return (i + 1) + '. ' + fmtSydney(new Date(e.ts)); });
       var text = "Whiskey's seizure log (" + entries.length + ')\n' + lines.join('\n');
 
       if (navigator.share) {
@@ -231,8 +320,10 @@ document.documentElement.classList.remove('no-js');
       persist([]);
       render();
       showToast('Log cleared');
+      if (ENDPOINT) callSheet({ action: 'clear' }, function () {});
     });
   }
 
   render();
+  sync();
 })();
