@@ -36,7 +36,7 @@ function handle_(e) {
       var ms = Number(new Date(p.iso).getTime());
       if (!isNaN(ms) && findRow_(sheet, ms) === -1) {
         var syd = Utilities.formatDate(new Date(ms), 'Australia/Sydney', 'EEE d MMM yyyy, h:mm a z');
-        sheet.appendRow([ms, syd, (p.ua || '').toString().slice(0, 80)]);
+        sheet.appendRow([ms, syd]);
       }
     } else if (action === 'delete' && p.iso) {
       if (!isAdmin) return reply_(e, { ok: false, error: 'unauthorized', admin: false });
@@ -61,7 +61,7 @@ function getSheet_() {
   var sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
-    sheet.appendRow(['Timestamp (ms)', 'Sydney time', 'Device']);
+    sheet.appendRow(['Timestamp (ms)', 'Sydney time']);
   }
   return sheet;
 }
