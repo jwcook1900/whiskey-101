@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -45,102 +45,220 @@
       <a href="#morning">🌅 Morning</a>
       <a href="#evening">🌙 Evening</a>
       <a href="#medicine">💊 Medicine</a>
+      <a href="#videos">📹 How-To Videos</a>
       <a href="#seizure">🚨 Seizure</a>
       <a href="#contacts">📞 Contacts</a>
     </nav>
 
-    <div class="grid">
+    <p class="accordion-hint">Tap a section to open it 👇</p>
+
+    <div class="accordion-list">
       <!-- MORNING -->
-      <section id="morning" class="card">
-        <h2 class="card__title"><span aria-hidden="true">🌅</span> Morning Routine</h2>
-        <ul>
-          <li><strong>First thing when I wake</strong> (around 6am usually): give me my morning medication.</li>
-          <li>You can put the pills straight down my throat.
-            <ul><li>I often try to spit them out, so please watch carefully.</li></ul>
-          </li>
-          <li><strong>Morning walk</strong> — about 1 hour.
-            <ul><li>I'll usually do my poo on this walk.</li></ul>
-          </li>
-          <li><strong>Breakfast</strong>
-            <ul><li>2 scoops of the frozen food. Sometimes I need some help to get started eating it — feed me a piece or two then I'll slowly get into it. If I don't, let it defrost for a bit and try again.</li></ul>
-          </li>
-        </ul>
-      </section>
-
-      <!-- EVENING -->
-      <section id="evening" class="card">
-        <h2 class="card__title"><span aria-hidden="true">🌙</span> Evening Routine</h2>
-        <ul>
-          <li>Optional 20-minute walk.</li>
-          <li>Not essential if I've had toilet breaks during the day.</li>
-          <li><strong>Dinner</strong> — 2 scoops of the frozen food.</li>
-          <li>Toilet trip right before bed.</li>
-          <li><strong>Evening medication.</strong></li>
-          <li>Sleeping arrangements
+      <section id="morning" class="accordion">
+        <h2 class="accordion__heading">
+          <button type="button" class="accordion__btn" aria-expanded="false" aria-controls="morning-body">
+            <span class="accordion__label"><span aria-hidden="true">🌅</span> Morning Routine</span>
+            <span class="accordion__chevron" aria-hidden="true"></span>
+          </button>
+        </h2>
+        <div id="morning-body" class="accordion__body" role="region" aria-label="Morning Routine">
+          <div class="accordion__inner">
             <ul>
-              <li>I can sleep on the bed, sofa, or anywhere I feel happiest.</li>
-              <li>Usually, this means on top of you!</li>
-            </ul>
-          </li>
-        </ul>
-      </section>
-
-      <!-- MEDICINE -->
-      <section id="medicine" class="card card--wide">
-        <h2 class="card__title"><span aria-hidden="true">💊</span> Medicine</h2>
-        <div class="med-grid">
-          <div class="med-block">
-            <h3 class="med-block__time">Morning</h3>
-            <ul class="pill-list">
-              <li><span class="dose">1×</span> Keppra 500mg</li>
-              <li><span class="dose">1×</span> Zonegran 100mg</li>
-              <li><span class="dose">1×</span> Zonegran 50mg</li>
-              <li><span class="dose">½</span> Apoquel</li>
-            </ul>
-            <p class="med-note"><strong>Teeth clean</strong> — a little tooth gel on his finger toothbrush. Focus on the canines.</p>
-            <p class="med-note"><strong>Lip clean</strong> — grooming wipes &amp; dry with plain gauze, then apply a little Isoderm to the sides / lip folds.</p>
-          </div>
-
-          <div class="med-block">
-            <h3 class="med-block__time">Lunchtime</h3>
-            <ul class="pill-list">
-              <li><span class="dose">1×</span> Keppra 500mg</li>
-            </ul>
-          </div>
-
-          <div class="med-block">
-            <h3 class="med-block__time">Evening</h3>
-            <ul class="pill-list">
-              <li><span class="dose">1×</span> Keppra 500mg</li>
-              <li><span class="dose">1×</span> Zonegran 100mg</li>
-              <li><span class="dose">1×</span> Zonegran 50mg</li>
-            </ul>
-          </div>
-
-          <div class="med-block med-block--highlight">
-            <h3 class="med-block__time">Monday &amp; Thursday only</h3>
-            <ul class="pill-list">
-              <li><span class="dose">.75ml</span> ear drops in each ear <em>(kept in the fridge)</em></li>
+              <li><strong>First thing when I wake</strong> (around 6am usually): give me my morning medication.</li>
+              <li>You can put the pills straight down my throat.
+                <ul><li>I often try to spit them out, so please watch carefully.</li></ul>
+              </li>
+              <li><strong>Morning walk</strong> — about 1 hour.
+                <ul><li>I'll usually do my poo on this walk.</li></ul>
+              </li>
+              <li><strong>Breakfast</strong>
+                <ul><li>2 scoops of the frozen food. Sometimes I need some help to get started eating it — feed me a piece or two then I'll slowly get into it. If I don't, let it defrost for a bit and try again.</li></ul>
+              </li>
             </ul>
           </div>
         </div>
       </section>
 
-      <!-- SEIZURE -->
-      <section id="seizure" class="card card--alert card--wide">
-        <h2 class="card__title"><span aria-hidden="true">🚨</span> In Case of Seizure</h2>
-        <ul>
-          <li><strong>Administer rectal valium</strong> during the seizure if you can — it's a plastic syringe device with a bandage wrapped around it. Straight up the bum!</li>
-          <li>Seizures should only last a few minutes and the valium should help.</li>
-          <li><strong>After a seizure:</strong>
+      <!-- EVENING -->
+      <section id="evening" class="accordion">
+        <h2 class="accordion__heading">
+          <button type="button" class="accordion__btn" aria-expanded="false" aria-controls="evening-body">
+            <span class="accordion__label"><span aria-hidden="true">🌙</span> Evening Routine</span>
+            <span class="accordion__chevron" aria-hidden="true"></span>
+          </button>
+        </h2>
+        <div id="evening-body" class="accordion__body" role="region" aria-label="Evening Routine">
+          <div class="accordion__inner">
             <ul>
-              <li>I'll be anxious and clingy.</li>
-              <li>I wet or soil myself during the seizure, so I'll need a bath, then a short walk to relax.</li>
-              <li>If I refuse to walk, that's okay.</li>
-              <li>Mostly just give me lots of love and cuddles. 🤍</li>
+              <li>Optional 20-minute walk.</li>
+              <li>Not essential if I've had toilet breaks during the day.</li>
+              <li><strong>Dinner</strong> — 2 scoops of the frozen food.</li>
+              <li>Toilet trip right before bed.</li>
+              <li><strong>Evening medication.</strong></li>
+              <li>Sleeping arrangements
+                <ul>
+                  <li>I can sleep on the bed, sofa, or anywhere I feel happiest.</li>
+                  <li>Usually, this means on top of you!</li>
+                </ul>
+              </li>
             </ul>
-          </li>
-        </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- MEDICINE -->
+      <section id="medicine" class="accordion">
+        <h2 class="accordion__heading">
+          <button type="button" class="accordion__btn" aria-expanded="false" aria-controls="medicine-body">
+            <span class="accordion__label"><span aria-hidden="true">💊</span> Medicine</span>
+            <span class="accordion__chevron" aria-hidden="true"></span>
+          </button>
+        </h2>
+        <div id="medicine-body" class="accordion__body" role="region" aria-label="Medicine">
+          <div class="accordion__inner">
+            <div class="med-grid">
+              <div class="med-block">
+                <h3 class="med-block__time">Morning</h3>
+                <ul class="pill-list">
+                  <li><span class="dose">1×</span> Keppra 500mg</li>
+                  <li><span class="dose">1×</span> Zonegran 100mg</li>
+                  <li><span class="dose">1×</span> Zonegran 50mg</li>
+                  <li><span class="dose">½</span> Apoquel</li>
+                </ul>
+                <p class="med-note"><strong>Teeth clean</strong> — a little tooth gel on his finger toothbrush. Focus on the canines.</p>
+                <p class="med-note"><strong>Lip clean</strong> — grooming wipes &amp; dry with plain gauze, then apply a little Isoderm to the sides / lip folds.</p>
+              </div>
+
+              <div class="med-block">
+                <h3 class="med-block__time">Lunchtime</h3>
+                <ul class="pill-list">
+                  <li><span class="dose">1×</span> Keppra 500mg</li>
+                </ul>
+              </div>
+
+              <div class="med-block">
+                <h3 class="med-block__time">Evening</h3>
+                <ul class="pill-list">
+                  <li><span class="dose">1×</span> Keppra 500mg</li>
+                  <li><span class="dose">1×</span> Zonegran 100mg</li>
+                  <li><span class="dose">1×</span> Zonegran 50mg</li>
+                </ul>
+              </div>
+
+              <div class="med-block med-block--highlight">
+                <h3 class="med-block__time">Monday &amp; Thursday only</h3>
+                <ul class="pill-list">
+                  <li><span class="dose">.75ml</span> ear drops in each ear <em>(kept in the fridge)</em></li>
+                </ul>
+              </div>
+            </div>
+            <p class="med-seealso">👉 Not sure how to do something? Watch the <a href="#videos">how-to videos</a>.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- HOW-TO VIDEOS -->
+      <section id="videos" class="accordion">
+        <h2 class="accordion__heading">
+          <button type="button" class="accordion__btn" aria-expanded="false" aria-controls="videos-body">
+            <span class="accordion__label"><span aria-hidden="true">📹</span> How-To Videos</span>
+            <span class="accordion__chevron" aria-hidden="true"></span>
+          </button>
+        </h2>
+        <div id="videos-body" class="accordion__body" role="region" aria-label="How-To Videos">
+          <div class="accordion__inner">
+            <p class="video-intro">Short demos of the fiddly bits. Tap play to watch.</p>
+            <div class="video-grid">
+
+              <figure class="video-card">
+                <figcaption class="video-card__title"><span aria-hidden="true">💊</span> Taking My Pills</figcaption>
+                <div class="video-frame" data-file="pills.mp4">
+                  <video controls preload="metadata" playsinline>
+                    <source src="videos/pills.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-placeholder">
+                    <span class="video-placeholder__icon" aria-hidden="true">🎥</span>
+                    <p class="video-placeholder__msg">Video coming soon</p>
+                    <p class="video-placeholder__hint">Add <code>videos/pills.mp4</code></p>
+                  </div>
+                </div>
+                <p class="video-card__desc">Popping the pills down my throat so I can't spit them out.</p>
+              </figure>
+
+              <figure class="video-card">
+                <figcaption class="video-card__title"><span aria-hidden="true">🪥</span> Teeth Brushing</figcaption>
+                <div class="video-frame" data-file="teeth.mp4">
+                  <video controls preload="metadata" playsinline>
+                    <source src="videos/teeth.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-placeholder">
+                    <span class="video-placeholder__icon" aria-hidden="true">🎥</span>
+                    <p class="video-placeholder__msg">Video coming soon</p>
+                    <p class="video-placeholder__hint">Add <code>videos/teeth.mp4</code></p>
+                  </div>
+                </div>
+                <p class="video-card__desc">Tooth gel on the finger brush, focusing on the canines.</p>
+              </figure>
+
+              <figure class="video-card">
+                <figcaption class="video-card__title"><span aria-hidden="true">🧼</span> Lip Washing</figcaption>
+                <div class="video-frame" data-file="lips.mp4">
+                  <video controls preload="metadata" playsinline>
+                    <source src="videos/lips.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-placeholder">
+                    <span class="video-placeholder__icon" aria-hidden="true">🎥</span>
+                    <p class="video-placeholder__msg">Video coming soon</p>
+                    <p class="video-placeholder__hint">Add <code>videos/lips.mp4</code></p>
+                  </div>
+                </div>
+                <p class="video-card__desc">Grooming wipes, dry with gauze, then a little Isoderm in the lip folds.</p>
+              </figure>
+
+              <figure class="video-card">
+                <figcaption class="video-card__title"><span aria-hidden="true">👂</span> Ear Drops</figcaption>
+                <div class="video-frame" data-file="ears.mp4">
+                  <video controls preload="metadata" playsinline>
+                    <source src="videos/ears.mp4" type="video/mp4" />
+                  </video>
+                  <div class="video-placeholder">
+                    <span class="video-placeholder__icon" aria-hidden="true">🎥</span>
+                    <p class="video-placeholder__msg">Video coming soon</p>
+                    <p class="video-placeholder__hint">Add <code>videos/ears.mp4</code></p>
+                  </div>
+                </div>
+                <p class="video-card__desc">.75ml in each ear — Monday &amp; Thursday only (kept in the fridge).</p>
+              </figure>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEIZURE -->
+      <section id="seizure" class="accordion accordion--alert">
+        <h2 class="accordion__heading">
+          <button type="button" class="accordion__btn" aria-expanded="false" aria-controls="seizure-body">
+            <span class="accordion__label"><span aria-hidden="true">🚨</span> In Case of Seizure</span>
+            <span class="accordion__chevron" aria-hidden="true"></span>
+          </button>
+        </h2>
+        <div id="seizure-body" class="accordion__body" role="region" aria-label="In Case of Seizure">
+          <div class="accordion__inner">
+            <ul>
+              <li><strong>Administer rectal valium</strong> during the seizure if you can — it's a plastic syringe device with a bandage wrapped around it. Straight up the bum!</li>
+              <li>Seizures should only last a few minutes and the valium should help.</li>
+              <li><strong>After a seizure:</strong>
+                <ul>
+                  <li>I'll be anxious and clingy.</li>
+                  <li>I wet or soil myself during the seizure, so I'll need a bath, then a short walk to relax.</li>
+                  <li>If I refuse to walk, that's okay.</li>
+                  <li>Mostly just give me lots of love and cuddles. 🤍</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
       </section>
     </div>
 
@@ -163,5 +281,7 @@
   <footer class="footer">
     <p>Made with 🤍 for Whiskey the English Cocker Spaniel</p>
   </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
