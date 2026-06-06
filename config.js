@@ -6,5 +6,5 @@
 //
 // See apps-script/Code.gs and the setup steps for how to get this URL.
 window.WHISKEY_CONFIG = {
-  seizureEndpoint: ''
+  seizureEndpoint: 'https://script.google.com/macros/s/AKfycbztBnn5pXyKWRhBHL-FXHrisLEfspNHcMuq6rBYF0SzoT7vi2v0QrgQzmVgJyM2Z7nx/exec'
 };
