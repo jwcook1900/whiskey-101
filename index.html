@@ -282,6 +282,19 @@
                 </ul>
               </li>
             </ul>
+
+            <div class="seizure-log">
+              <button type="button" id="log-seizure-btn" class="btn btn--danger btn--big">
+                <span aria-hidden="true">📝</span> Log a Seizure
+              </button>
+              <p class="seizure-log__count" id="seizure-count">No seizures logged yet.</p>
+              <ul class="seizure-log__list" id="seizure-list" aria-live="polite"></ul>
+              <div class="seizure-log__actions" id="seizure-actions" hidden>
+                <button type="button" id="export-log-btn" class="btn btn--ghost btn--sm"><span aria-hidden="true">📤</span> Export / Share</button>
+                <button type="button" id="clear-log-btn" class="btn btn--ghost btn--sm"><span aria-hidden="true">🗑️</span> Clear all</button>
+              </div>
+              <p class="seizure-log__note">Saved on this device, in Sydney time. Use <strong>Export / Share</strong> to send the history to the vet.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -306,6 +319,21 @@
   <footer class="footer">
     <p>Made with 🤍 for Whiskey the English Cocker Spaniel</p>
   </footer>
+
+  <!-- Seizure log confirmation modal -->
+  <dialog id="seizure-dialog" class="dialog" aria-labelledby="dialog-title">
+    <form method="dialog" class="dialog__inner">
+      <h3 id="dialog-title" class="dialog__title"><span aria-hidden="true">🚨</span> Log a seizure?</h3>
+      <p class="dialog__time" id="dialog-time">—</p>
+      <p class="dialog__sub">This moment will be saved to Whiskey's seizure log.</p>
+      <div class="dialog__actions">
+        <button value="cancel" class="btn btn--ghost">Cancel</button>
+        <button value="confirm" id="dialog-confirm" class="btn btn--danger">Confirm &amp; save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <script src="script.js"></script>
 </body>
